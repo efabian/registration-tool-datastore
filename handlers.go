@@ -45,15 +45,6 @@ const projectID string = "hk-thai-kadiwa"
 // TimeSalt for the Ping Handler
 const TimeSalt string = "LMjKASwwzUvFQwtr8jmFrjKXeBQQ3LzC"
 
-func queryStringValidator(qs []string, ok bool) (queryString string) {
-	if ok {
-		queryString = qs[0]
-	} else {
-		queryString = ""
-	}
-	return
-}
-
 func retrieveSecrets() (secretsQuery []secrets) {
 	ctx := context.Background()
 
