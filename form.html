@@ -1,0 +1,27 @@
+<!-- form.html -->
+{{if .Success}}
+    <h1>Thanks for registering! Please check your email.</h1>
+{{else if .RecordFailed}}
+    <h1>Failed to record entry!</h1>
+{{else if .EmailFailed}}
+    <h1>Failed to send email. Please check your email.</h1>
+{{else}}
+    <h1>Registration</h1>
+    <form method="POST">
+        <label>Email:</label><br />
+        <input type="text" name="email"><br />
+        <label>First Name:</label><br />
+        <input type="text" name="fname"><br />
+        <label>Last Name:</label><br />
+        <input type="text" name="lname"><br />
+        <label>Local:</label><br />
+        <input type="text" name="local"><br />
+        <label>District:</label><br />
+        <input type="radio" id="hk" name="district" value="hk">
+        <label for="hk">Hong Kong</label>
+        <input type="radio" id="th" name="district" value="th">
+        <label for="hk">Thailand</label>
+        <br />
+        <input type="submit">
+    </form>
+{{end}}
