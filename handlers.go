@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/user"
 	"gopkg.in/gomail.v2"
 )
 
@@ -152,8 +154,13 @@ func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 		Email:     r.FormValue("email"),
 		FirstName: r.FormValue("fname"),
 		LastName:  r.FormValue("lname"),
+		Area:      r.FormValue("area"),
+		Group:     r.FormValue("group"),
+		Function:  r.FormValue("function"),
+		Gender:    r.FormValue("gender"),
 		Local:     r.FormValue("local"),
 		District:  r.FormValue("district"),
+		Available: r.FormValue("available"),
 	}
 
 	recorded := record(details)
@@ -171,9 +178,45 @@ func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func retrieveRecords() (entriesQuery []Entry) {
+	ctx := context.Background()
+
+	client, err := datastore.NewClient(ctx, projectID)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+
+	q := datastore.NewQuery("Registration")
+
+	if _, err := client.GetAll(ctx, q, &entriesQuery); err != nil {
+		log.Fatalf("Failed to retrieve records: %v", err)
+	}
+	return entriesQuery
+}
+
 // RetrievalHandler retrieves the records from the database
 func RetrievalHandler(w http.ResponseWriter, r *http.Request) {
-	// To Do
+	// To-Do: Add a security
+	// tmpl := template.Must(template.ParseFiles("records.html"))
+	// records := retrieveRecords()
+	// err := tmpl.Execute(w, records)
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+}
+
+// Tester for a new handler
+func Tester(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "text/html; charset=utf-8")
+	ctx := appengine.NewContext(r)
+	u := user.Current(ctx)
+	if u == nil {
+		url, _ := user.LoginURL(ctx, "http://localhost:8080/internal/retrieve")
+		fmt.Fprintf(w, `<a href="%s">Sign in or register</a>`, url)
+		return
+	}
+	url, _ := user.LogoutURL(ctx, "/internal/retrieve")
+	fmt.Fprintf(w, `Welcome, %s! (<a href="%s">sign out</a>)`, u, url)
 }
 
 // StatusHandler provides basic health check

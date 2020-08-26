@@ -14,8 +14,13 @@ type Entry struct {
 	Email     string
 	FirstName string
 	LastName  string
+	Area      string
+	Group     string
+	Function  string
+	Gender    string
 	Local     string
 	District  string
+	Available string
 }
 
 func main() {
@@ -24,6 +29,7 @@ func main() {
 
 	http.HandleFunc("/internal/register", RegistrationHandler)
 	http.HandleFunc("/internal/retrieve", RetrievalHandler)
+	http.HandleFunc("/internal/test", Tester)
 
 	// Health and miscellaneous APIs
 	http.HandleFunc("/status", StatusHandler)

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Records</title>
+</head>
+<body>
+<ul>
+    {{range $index, $element := .}}
+    <li>{{$element.Email}} 
+        <ul>Name: {{$element.FirstName}} {{$element.LastName}}</ul>
+        <ul>Area-Group: {{$element.Area}}-{{$element.Group}}</ul>
+        <ul>Gender: {{$element.Gender}}</ul>
+        <ul>Church Duty: {{$element.Function}}</ul>
+        <ul>Local: {{$element.Local}}</ul>
+        <ul>District: {{$element.District}}</ul>
+        <ul>Available: {{$element.Available}}</ul>
+    </li>
+    <br>
+    {{end}}
+</ul>
+</body>
+</html>
