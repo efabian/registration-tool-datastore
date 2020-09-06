@@ -11,16 +11,18 @@ import (
 
 // Entry is the schema of records
 type Entry struct {
-	Email     string
-	FirstName string
-	LastName  string
-	Area      string
-	Group     string
-	Function  string
-	Gender    string
-	Local     string
-	District  string
-	Available string
+	Email        string
+	FirstName    string
+	LastName     string
+	Area         string
+	Group        string
+	Function     string
+	Gender       string
+	Local        string
+	District     string
+	Status       string
+	PreferredDay string
+	Available    string //Deprecated property; to-be deleted
 }
 
 func main() {

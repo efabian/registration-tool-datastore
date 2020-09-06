@@ -1,0 +1,61 @@
+<!-- form.html -->
+{{if .Success}}
+    <h1>Thanks for registering! Please check your email.</h1>
+{{else if .RecordFailed}}
+    <h1>Failed to record entry!</h1>
+{{else if .EmailFailed}}
+    <h1>Failed to send email. Please check your email.</h1>
+{{else}}
+    <h1>Registration</h1>
+    <form method="POST">
+        <div>
+            {{ with .Errors.Email }}
+            <p class="error">{{ . }}</p>
+            {{ end }}
+            <label>Email:</label><br />
+            <input type="text" name="email" value="{{ .Email }}"><br />
+        </div>
+        <label>First Name:</label><br />
+        <input type="text" name="fname"><br />
+        <label>Last Name:</label><br />
+        <input type="text" name="lname"><br />
+        <label>Area:</label><br />
+        <input type="text" name="area"><br />
+        <label>Group:</label><br />
+        <input type="text" name="group"><br />
+        <label>Church Duty:</label><br />
+        <input type="text" name="function"><br />
+        <label>Gender:</label><br />
+        <input type="radio" id="male" name="gender" value="male">
+        <label for="male">Male</label>
+        <input type="radio" id="female" name="gender" value="female">
+        <label for="female">Female</label><br /><br />
+        <label>Local:</label><br />
+        <input type="text" name="local"><br /><br />
+        <label>District:</label><br />
+        <input type="radio" id="hk" name="district" value="hk">
+        <label for="hk">Hong Kong</label>
+        <input type="radio" id="th" name="district" value="th">
+        <label for="th">Thailand</label><br /><br />
+        <label>Status:</label><br />
+        <input type="radio" id="single-available" name="status" value="single-available">
+        <label for="single-available">Single & Available</label>
+        <input type="radio" id="single-not-available" name="status" value="single-not-available">
+        <label for="single-not-available">Single but not looking</label>
+        <input type="radio" id="in-a-relationship" name="status" value="in-a-relationship">
+        <label for="in-a-relationship">In a Relationship</label><br /><br />
+        <label>Preferred day to join Meet & Greet:</label><br />
+        <input type="radio" id="mon" name="prefday" value="mon">
+        <label for="mon">Sep. 14, Monday, 9:30pm (TH) / 10:30pm (HK)</label><br />
+        <input type="radio" id="tue" name="prefday" value="tue">
+        <label for="tue">Sep. 15, Tuesday, 9:30pm (TH) / 10:30pm (HK)</label><br />
+        <input type="radio" id="wed" name="prefday" value="wed">
+        <label for="wed">Sep. 16, Wednesday, 9:30pm (TH) / 10:30pm (HK)</label><br />
+        <input type="radio" id="thu" name="prefday" value="thu">
+        <label for="thu">Sep. 17, Thursday, 9:30pm (TH) / 10:30pm (HK)</label><br />
+        <input type="radio" id="fri" name="prefday" value="fri">
+        <label for="fri">Sep. 18, Friday, 9:30pm (TH) / 10:30pm (HK)</label><br />
+        <br /><br />
+        <input type="submit">
+    </form>
+{{end}}
