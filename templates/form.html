@@ -1,13 +1,15 @@
-<!-- form.html 
+<!-- form.html -->
 {{if .Success}}
     <h1>Thanks for registering! Please check your email.</h1>
 {{else if .RecordFailed}}
     <h1>Failed to record entry!</h1>
 {{else if .EmailFailed}}
     <h1>Failed to send email. Please check your email.</h1>
-{{else}}-->
+{{else}}
+
+<style type="text/css">.error {color: red;}</style>
     <h1>Registration</h1>
-    <form method="POST">
+    <form method="POST" novalidate>
         <div>
             {{ with .Errors.Email }}
             <p class="error">{{ . }}</p>
@@ -58,4 +60,4 @@
         <br /><br />
         <input type="submit">
     </form>
-<!--{{end}}-->
+{{end}}

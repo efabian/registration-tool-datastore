@@ -7,10 +7,27 @@ import (
 var rxEmail = regexp.MustCompile(".+@.+\\..+")
 
 // Message will check inputs for errors
+// type Message struct {
+// 	Email string
+// 	// Content string
+// 	Errors map[string]string
+// }
+
+// Message will check inputs for errors
 type Message struct {
-	Email string
-	// Content string
-	Errors map[string]string
+	Email        string
+	FirstName    string
+	LastName     string
+	Area         string
+	Group        string
+	Function     string
+	Gender       string
+	Local        string
+	District     string
+	Status       string
+	PreferredDay string
+	Available    string //Deprecated property; to-be deleted
+	Errors       map[string]string
 }
 
 // Validate user input
