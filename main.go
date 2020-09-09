@@ -31,7 +31,8 @@ func main() {
 
 	http.HandleFunc("/internal/register", RegistrationHandler)
 	http.HandleFunc("/internal/retrieve", RetrievalHandler)
-	http.HandleFunc("/internal/test", Tester)
+	http.HandleFunc("/confirmation", confirmation)
+	http.HandleFunc("/failed", failed)
 
 	// Health and miscellaneous APIs
 	http.HandleFunc("/status", StatusHandler)

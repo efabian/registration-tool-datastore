@@ -52,12 +52,12 @@ func render(w http.ResponseWriter, filename string, data interface{}) {
 	tmpl, err := template.ParseFiles(filename)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Sorry, something went wrong1", http.StatusInternalServerError)
+		http.Error(w, "Sorry, something went wrong", http.StatusInternalServerError)
 	}
 
 	if err := tmpl.Execute(w, data); err != nil {
 		log.Println(err)
-		http.Error(w, "Sorry, something went wrong2", http.StatusInternalServerError)
+		http.Error(w, "Sorry, something went wrong", http.StatusInternalServerError)
 	}
 }
 
@@ -155,10 +155,24 @@ func sendEmail(email string, message string) (ok bool) {
 	return ok
 }
 
+func confirmation(w http.ResponseWriter, r *http.Request) {
+	render(w, "templates/confirmation.html", nil)
+}
+
+func failed(w http.ResponseWriter, r *http.Request) {
+	render(w, "templates/failed.html", nil)
+}
+
+func getHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		render(w, "templates/form.html", nil)
+	}
+}
+
 // RegistrationHandler adds new record in the database
 func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		render(w, "templates/form.html", nil)
+		getHandler(w, r)
 		return
 	}
 	// tmpl := template.Must(template.ParseFiles("templates/form.html"))
@@ -170,16 +184,16 @@ func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 
 	msg := &Message{
 		Email:        strings.ToLower(r.FormValue("email")),
-		FirstName:    r.FormValue("fname"),
-		LastName:     r.FormValue("lname"),
-		Area:         r.FormValue("area"),
-		Group:        r.FormValue("group"),
-		Function:     r.FormValue("function"),
-		Gender:       r.FormValue("gender"),
-		Local:        r.FormValue("local"),
-		District:     r.FormValue("district"),
-		Status:       r.FormValue("status"),
-		PreferredDay: r.FormValue("prefday"),
+		FirstName:    r.PostFormValue("fname"),
+		LastName:     r.PostFormValue("lname"),
+		Area:         r.PostFormValue("area"),
+		Group:        r.PostFormValue("group"),
+		Function:     r.PostFormValue("function"),
+		Gender:       r.PostFormValue("gender"),
+		Local:        r.PostFormValue("local"),
+		District:     r.PostFormValue("district"),
+		Status:       r.PostFormValue("status"),
+		PreferredDay: r.PostFormValue("prefday"),
 	}
 
 	if msg.Validate() == false {
@@ -213,12 +227,12 @@ func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 	// } else {
 	// 	tmpl.Execute(w, struct{ RecordFailed bool }{true})
 	// }
-	_ = recorded
-	// if recorded {
-	// 	tmpl.Execute(w, struct{ Success bool }{true})
-	// } else {
-	// 	tmpl.Execute(w, struct{ RecordFailed bool }{true})
-	// }
+	// _ = recorded
+	if recorded {
+		http.Redirect(w, r, "/confirmation", http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, "/failed", http.StatusSeeOther)
+	}
 }
 
 func retrieveRecords() (entriesQuery []Entry) {
@@ -240,16 +254,16 @@ func retrieveRecords() (entriesQuery []Entry) {
 // RetrievalHandler retrieves the records from the database
 func RetrievalHandler(w http.ResponseWriter, r *http.Request) {
 	// To-Do: Add a security
-	tmpl := template.Must(template.ParseFiles("templates/records.html"))
-	records := retrieveRecords()
-	log.Println(records[0].Email)
+	// tmpl := template.Must(template.ParseFiles("templates/records.html"))
+	// records := retrieveRecords()
+	// log.Println(records[0].Email)
 	// if records.PreferredDay = "wed" {
 	// 	records.
 	// }
-	err := tmpl.Execute(w, records)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	// err := tmpl.Execute(w, records)
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
 }
 
 // Tester for a new handler
