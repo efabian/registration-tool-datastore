@@ -6,6 +6,7 @@ import (
 )
 
 var rxEmail = regexp.MustCompile(".+@.+\\..+")
+var rxDigit = regexp.MustCompile(`\d`)
 
 // Message will check inputs for errors
 // type Message struct {
@@ -14,8 +15,8 @@ var rxEmail = regexp.MustCompile(".+@.+\\..+")
 // 	Errors map[string]string
 // }
 
-// Message will check inputs for errors
-type Message struct {
+// Inputs will be validated for errors
+type Inputs struct {
 	Email        string
 	FirstName    string
 	LastName     string
@@ -32,10 +33,13 @@ type Message struct {
 }
 
 // Validate user input
-func (msg *Message) Validate() bool {
+func (msg *Inputs) Validate() bool {
 	msg.Errors = make(map[string]string)
 
 	match := rxEmail.Match([]byte(msg.Email))
+	matchArea := rxDigit.FindString(string(msg.Area))
+	matchGroup := rxDigit.FindString(string(msg.Group))
+
 	if match == false {
 		msg.Errors["Email"] = "Please enter a valid email address"
 	}
@@ -48,11 +52,13 @@ func (msg *Message) Validate() bool {
 		msg.Errors["LastName"] = "Please enter your family name"
 	}
 
-	if strings.TrimSpace(msg.Area) == "" {
+	// if strings.TrimSpace(msg.Area) == "" {
+	if matchArea == "" {
 		msg.Errors["Area"] = "Please enter your local's area"
 	}
 
-	if strings.TrimSpace(msg.Group) == "" {
+	// if strings.TrimSpace(msg.Group) == "" {
+	if matchGroup == "" {
 		msg.Errors["Group"] = "Please enter your area's group"
 	}
 
@@ -74,6 +80,10 @@ func (msg *Message) Validate() bool {
 
 	if strings.TrimSpace(msg.PreferredDay) == "" {
 		msg.Errors["PreferredDay"] = "Please pick your preferred day & time"
+	}
+
+	if strings.TrimSpace(msg.PreferredDay) == "overbooked" {
+		msg.Errors["PreferredDay"] = "It's overbooked. Please pick another day & time"
 	}
 
 	return len(msg.Errors) == 0

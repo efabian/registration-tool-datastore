@@ -5,7 +5,7 @@
 
 <body>
   <p>
-    <strong>Greetings Ka {{.Name}}</strong>
+    <strong>Greetings Ka {{.FName}}</strong>
   </p>
   <p>
     Here are the details of the meeting:
@@ -19,9 +19,11 @@
   </p>
   <p>
     Some reminders:
+    <li>Please follow this naming convention: {{.District}}_{{.FName}}_{{.LName}}</li>
+    <li>Please join the Zoom meeting at {{.Time}}</li>
     <li>Please keep the camera open</li>
     <li>Keep the mic mute when not speaking</li>
-    <li>Please be on time</li>
+    <li>Make yourself comfortable and have fun!</li>
   </p>
   <p>
     See you there!,<br>

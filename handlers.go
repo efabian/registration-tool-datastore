@@ -19,12 +19,15 @@ import (
 )
 
 type templateTags struct {
-	Name  string
-	ZQR   string
-	ZLink string
-	ZMeet string
-	ZPass string
-	ZDate string
+	FName    string
+	LName    string
+	District string
+	Time     string
+	ZQR      string
+	ZLink    string
+	ZMeet    string
+	ZPass    string
+	ZDate    string
 }
 
 type secrets struct {
@@ -70,8 +73,8 @@ func retrieveSecrets() (secretsQuery []secrets) {
 	}
 
 	q := datastore.NewQuery("Secrets").
-		Filter("ID =", 1).
-		Limit(1)
+		Filter("ID <", 7).
+		Limit(6)
 
 	if _, err := client.GetAll(ctx, q, &secretsQuery); err != nil {
 		log.Fatalf("Failed to retrieve secrets: %v", err)
@@ -101,15 +104,43 @@ func record(details Entry) (ok bool) {
 	return ok
 }
 
-func createMessage(name string) (message string) {
+func createMessage(fname string, lname string, district string, day string) (message string) {
 	secrets := retrieveSecrets()
-	zqr := secrets[0].QR
-	zlink := secrets[0].Link
-	zmeet := secrets[0].Meet
-	zpass := secrets[0].Pass
-	zdate := secrets[0].Date
-	var tags = templateTags{name, zqr, zlink, zmeet, zpass, zdate}
-	emailBody := template.New("templates/emailtemplate.html")
+	var i int
+	if day == "mon" {
+		i = 0
+	}
+	if day == "tue" {
+		i = 1
+	}
+	if day == "wed" {
+		i = 2
+	}
+	if day == "thu" {
+		i = 3
+	}
+	if day == "fri" {
+		i = 4
+	}
+	if day == "sat" {
+		i = 5
+	}
+
+	zqr := secrets[i].QR
+	zlink := secrets[i].Link
+	zmeet := secrets[i].Meet
+	zpass := secrets[i].Pass
+	zdate := secrets[i].Date
+
+	var time string
+	if district == "hk" {
+		time = "9:50PM"
+	} else {
+		time = "8:50PM"
+	}
+
+	var tags = templateTags{fname, lname, strings.ToUpper(district), time, zqr, zlink, zmeet, zpass, zdate}
+	emailBody := template.New("emailtemplate.html")
 
 	emailBody, err := emailBody.ParseFiles("templates/emailtemplate.html")
 	if err != nil {
@@ -159,8 +190,12 @@ func confirmation(w http.ResponseWriter, r *http.Request) {
 	render(w, "templates/confirmation.html", nil)
 }
 
-func failed(w http.ResponseWriter, r *http.Request) {
-	render(w, "templates/failed.html", nil)
+func registrationfailure(w http.ResponseWriter, r *http.Request) {
+	render(w, "templates/registrationfailure.html", nil)
+}
+
+func sendingfailure(w http.ResponseWriter, r *http.Request) {
+	render(w, "templates/sendingfailure.html", nil)
 }
 
 func getHandler(w http.ResponseWriter, r *http.Request) {
@@ -169,20 +204,31 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func checkSize(day string) (size int) {
+	ctx := context.Background()
+
+	client, err := datastore.NewClient(ctx, projectID)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+
+	q := datastore.NewQuery("Registration").Filter("PreferredDay =", day)
+
+	if size, err = client.Count(ctx, q); err != nil {
+		log.Fatalf("Failed to retrieve records: %v", err)
+	}
+	log.Println(size)
+	return size
+}
+
 // RegistrationHandler adds new record in the database
 func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		getHandler(w, r)
 		return
 	}
-	// tmpl := template.Must(template.ParseFiles("templates/form.html"))
 
-	// if r.Method != http.MethodPost {
-	// 	tmpl.Execute(w, nil)
-	// 	return
-	// }
-
-	msg := &Message{
+	msg := &Inputs{
 		Email:        strings.ToLower(r.FormValue("email")),
 		FirstName:    r.PostFormValue("fname"),
 		LastName:     r.PostFormValue("lname"),
@@ -196,12 +242,18 @@ func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 		PreferredDay: r.PostFormValue("prefday"),
 	}
 
+	size := checkSize(msg.PreferredDay)
+
+	if size > 12 {
+		msg.PreferredDay = "overbooked"
+	}
+
 	if msg.Validate() == false {
 		render(w, "templates/form.html", msg)
 		return
 	}
 
-	validatedDetails := Entry{
+	validatedInputs := Entry{
 		Email:        strings.ToLower(r.FormValue("email")),
 		FirstName:    r.FormValue("fname"),
 		LastName:     r.FormValue("lname"),
@@ -214,24 +266,20 @@ func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 		Status:       r.FormValue("status"),
 		PreferredDay: r.FormValue("prefday"),
 	}
-	log.Println(validatedDetails)
-	recorded := record(validatedDetails)
-	// if recorded {
-	// 	createdMessage := createMessage(details.FirstName)
-	// 	sentEmail := sendEmail(details.Email, createdMessage)
-	// 	if sentEmail {
-	// 		tmpl.Execute(w, struct{ Success bool }{true})
-	// 	} else {
-	// 		tmpl.Execute(w, struct{ EmailFailed bool }{true})
-	// 	}
-	// } else {
-	// 	tmpl.Execute(w, struct{ RecordFailed bool }{true})
-	// }
-	// _ = recorded
+
+	recorded := record(validatedInputs)
+
 	if recorded {
-		http.Redirect(w, r, "/confirmation", http.StatusSeeOther)
+		createdMessage := createMessage(validatedInputs.FirstName, validatedInputs.LastName, validatedInputs.District, validatedInputs.PreferredDay)
+		sentEmail := sendEmail(validatedInputs.Email, createdMessage)
+
+		if sentEmail {
+			http.Redirect(w, r, "/confirmation", http.StatusSeeOther)
+		} else {
+			http.Redirect(w, r, "/sendingfailure", http.StatusSeeOther)
+		}
 	} else {
-		http.Redirect(w, r, "/failed", http.StatusSeeOther)
+		http.Redirect(w, r, "/recordfailure", http.StatusSeeOther)
 	}
 }
 
