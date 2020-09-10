@@ -4,28 +4,28 @@
 <head></head>
 
 <body>
-  <p>
+  <h2>
     <strong>Greetings Ka {{.FName}}</strong>
-  </p>
-  <p>
+  </h2>
+  <p style = "font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:15px;">
     Here are the details of the meeting:
   </p>
-  <img src="{{.ZQR}}">
-  <p>
+  <p style = "font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:15px;">
     Meeting Link: {{.ZLink}}<br>
     Meeting Number: {{.ZMeet}}<br>
     Meeting Password: {{.ZPass}}<br>
     Date: {{.ZDate}}<br>
   </p>
-  <p>
-    Some reminders:
-    <li>Please follow this naming convention: {{.District}}_{{.FName}}_{{.LName}}</li>
-    <li>Please join the Zoom meeting at {{.Time}}</li>
-    <li>Please keep the camera open</li>
-    <li>Keep the mic mute when not speaking</li>
-    <li>Make yourself comfortable and have fun!</li>
+  <p style = "font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:15px;">
+    Some reminders:<br><br>
+    - Please follow this naming convention: {{.District}}_{{.FName}}_{{.LName}}_{{.Local}}<br>
+    - Please join the Zoom meeting at {{.Time}}<br>
+    - Please keep the camera open<br>
+    - Keep the mic mute when not speaking<br>
+    - Make yourself comfortable and have fun!<br>
   </p>
-  <p>
+  <img src="{{.ZQR}}" >
+  <p style = "font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:15px;">
     See you there!,<br>
     KDO - HK & Thailand
   </p>

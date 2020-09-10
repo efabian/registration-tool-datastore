@@ -4,88 +4,109 @@
         color: red;
     }
 </style>
-<h1>Registration</h1>
-<form action="/internal/register" method="POST" novalidate>
+<h2 style = "font-family:Verdana, Geneva, Tahoma, sans-serif;">Registration</h2>
+<form action="/meet-greet/register" method="POST" novalidate>
     <div>
         {{ with .Errors.Email }}
         <p class="error">{{ . }}</p>
         {{ end }}
+        <p style = "font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:14px;">
         <label>Email:</label><br />
         <input type="email" name="email" value="{{ .Email }}"><br />
+        </p>
     </div>
     <div>
         {{ with .Errors.FirstName }}
         <p class="error">{{ . }}</p>
         {{ end }}
+        <p style = "font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:14px;">
         <label>First Name:</label><br />
         <input type="text" name="fname" value="{{ .FirstName }}"><br />
+        </p>
     </div>
     <div>
         {{ with .Errors.LastName }}
         <p class="error">{{ . }}</p>
         {{ end }}
+        <p style = "font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:14px;">
         <label>Last Name:</label><br />
         <input type="text" name="lname" value="{{ .LastName }}"><br />
+        </p>
     </div>
     <div>
         {{ with .Errors.Area }}
         <p class="error">{{ . }}</p>
         {{ end }}
+        <p style = "font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:14px;">
         <label>Area:</label><br />
         <input type="text" name="area" value="{{ .Area }}"><br />
+        </p>
     </div>
     <div>
         {{ with .Errors.Group }}
         <p class="error">{{ . }}</p>
         {{ end }}
+        <p style = "font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:14px;">
         <label>Group:</label><br />
         <input type="text" name="group" value="{{ .Group }}"><br />
+        </p>
     </div>
+    <p style = "font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:14px;">
     <label>Church Duty:</label><br />
     <input type="text" name="function"><br />
+    </p>
     <div>
         {{ with .Errors.Gender }}
         <p class="error">{{ . }}</p>
         {{ end }}
+        <p style = "font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:14px;">
         <label>Gender:</label><br />
         <input type="radio" id="male" name="gender" value="male">
         <label for="male">Male</label>
         <input type="radio" id="female" name="gender" value="female">
-        <label for="female">Female</label><br /><br />
+        <label for="female">Female</label><br />
+        </p>
     </div>
     <div> 
         {{ with .Errors.Local }}
         <p class="error">{{ . }}</p>
         {{ end }}
+        <p style = "font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:14px;">
         <label>Local:</label><br />
-        <input type="text" name="local" value="{{ .Local }}"><br /><br />
+        <input type="text" name="local" value="{{ .Local }}"><br />
+        </p>
     </div>
     <div> 
         {{ with .Errors.District }}
         <p class="error">{{ . }}</p>
         {{ end }}
+        <p style = "font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:14px;">
         <label>District:</label><br />
         <input type="radio" id="hk" name="district" value="hk">
         <label for="hk">Hong Kong</label>
         <input type="radio" id="th" name="district" value="th">
-        <label for="th">Thailand</label><br /><br />
+        <label for="th">Thailand</label><br />
+        </p>
     </div>
     <div> 
         {{ with .Errors.Status }}
         <p class="error">{{ . }}</p>
         {{ end }}
+        <p style = "font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:14px;">
         <label>Status:</label><br />
         <input type="radio" id="single-available" name="status" value="single-available">
         <label for="single-available">Single & Available</label>
         <input type="radio" id="single-not-available" name="status" value="single-not-available">
         <label for="single-not-available">Single but not looking</label>
         <input type="radio" id="in-a-relationship" name="status" value="in-a-relationship">
-        <label for="in-a-relationship">In a Relationship</label><br /><br />
+        <label for="in-a-relationship">In a Relationship</label><br />
+        </p>
     </div>
     <div> 
         {{ with .Errors.PreferredDay }}
         <p class="error">{{ . }}</p>
         {{ end }}
+        <p style = "font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:14px;">
         <label>Preferred day to join Meet & Greet:</label><br />
         <input type="radio" id="mon" name="prefday" value="mon">
         <label for="mon">Sep. 14, Monday, 9:00pm (TH) / 10:00pm (HK)</label><br />
@@ -99,7 +120,7 @@
         <label for="fri">Sep. 18, Friday, 9:00pm (TH) / 10:00pm (HK)</label><br />
         <input type="radio" id="sat" name="prefday" value="sat">
         <label for="sat">Sep. 19, Saturday, 9:00pm (TH) / 10:00pm (HK)</label><br />
+        </p>
     </div>
-    <br /><br />
     <input type="submit">
 </form>

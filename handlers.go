@@ -21,6 +21,7 @@ import (
 type templateTags struct {
 	FName    string
 	LName    string
+	Local    string
 	District string
 	Time     string
 	ZQR      string
@@ -90,7 +91,7 @@ func record(details Entry) (ok bool) {
 		log.Fatalf("Failed to create client: %v", err)
 	}
 
-	kind := "Registration"
+	kind := "Registrations"
 	key := details.Email
 	recordKey := datastore.NameKey(kind, key, nil)
 	record := details
@@ -104,7 +105,7 @@ func record(details Entry) (ok bool) {
 	return ok
 }
 
-func createMessage(fname string, lname string, district string, day string) (message string) {
+func createMessage(fname string, lname string, local string, district string, day string) (message string) {
 	secrets := retrieveSecrets()
 	var i int
 	if day == "mon" {
@@ -133,13 +134,13 @@ func createMessage(fname string, lname string, district string, day string) (mes
 	zdate := secrets[i].Date
 
 	var time string
-	if district == "hk" {
-		time = "9:50PM"
+	if district == "HK" {
+		time = "9:45PM"
 	} else {
-		time = "8:50PM"
+		time = "8:45PM"
 	}
 
-	var tags = templateTags{fname, lname, strings.ToUpper(district), time, zqr, zlink, zmeet, zpass, zdate}
+	var tags = templateTags{fname, lname, local, district, time, zqr, zlink, zmeet, zpass, zdate}
 	emailBody := template.New("emailtemplate.html")
 
 	emailBody, err := emailBody.ParseFiles("templates/emailtemplate.html")
@@ -186,18 +187,6 @@ func sendEmail(email string, message string) (ok bool) {
 	return ok
 }
 
-func confirmation(w http.ResponseWriter, r *http.Request) {
-	render(w, "templates/confirmation.html", nil)
-}
-
-func registrationfailure(w http.ResponseWriter, r *http.Request) {
-	render(w, "templates/registrationfailure.html", nil)
-}
-
-func sendingfailure(w http.ResponseWriter, r *http.Request) {
-	render(w, "templates/sendingfailure.html", nil)
-}
-
 func getHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		render(w, "templates/form.html", nil)
@@ -212,7 +201,7 @@ func checkSize(day string) (size int) {
 		log.Fatalf("Failed to create client: %v", err)
 	}
 
-	q := datastore.NewQuery("Registration").Filter("PreferredDay =", day)
+	q := datastore.NewQuery("Registrations").Filter("PreferredDay =", day)
 
 	if size, err = client.Count(ctx, q); err != nil {
 		log.Fatalf("Failed to retrieve records: %v", err)
@@ -244,7 +233,7 @@ func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 
 	size := checkSize(msg.PreferredDay)
 
-	if size > 12 {
+	if size > 85 {
 		msg.PreferredDay = "overbooked"
 	}
 
@@ -255,14 +244,14 @@ func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 
 	validatedInputs := Entry{
 		Email:        strings.ToLower(r.FormValue("email")),
-		FirstName:    r.FormValue("fname"),
-		LastName:     r.FormValue("lname"),
+		FirstName:    strings.Title(strings.ToLower(r.FormValue("fname"))),
+		LastName:     strings.Title(strings.ToLower(r.FormValue("lname"))),
 		Area:         r.FormValue("area"),
 		Group:        r.FormValue("group"),
-		Function:     r.FormValue("function"),
+		Function:     strings.Title(r.FormValue("function")),
 		Gender:       r.FormValue("gender"),
-		Local:        r.FormValue("local"),
-		District:     r.FormValue("district"),
+		Local:        strings.Title(r.FormValue("local")),
+		District:     strings.ToUpper(r.FormValue("district")),
 		Status:       r.FormValue("status"),
 		PreferredDay: r.FormValue("prefday"),
 	}
@@ -270,16 +259,16 @@ func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 	recorded := record(validatedInputs)
 
 	if recorded {
-		createdMessage := createMessage(validatedInputs.FirstName, validatedInputs.LastName, validatedInputs.District, validatedInputs.PreferredDay)
+		createdMessage := createMessage(validatedInputs.FirstName, validatedInputs.LastName, validatedInputs.Local, validatedInputs.District, validatedInputs.PreferredDay)
 		sentEmail := sendEmail(validatedInputs.Email, createdMessage)
 
 		if sentEmail {
-			http.Redirect(w, r, "/confirmation", http.StatusSeeOther)
+			render(w, "templates/confirmation.html", nil)
 		} else {
-			http.Redirect(w, r, "/sendingfailure", http.StatusSeeOther)
+			render(w, "templates/sendingfailure.html", nil)
 		}
 	} else {
-		http.Redirect(w, r, "/recordfailure", http.StatusSeeOther)
+		render(w, "templates/registrationfailure.html", nil)
 	}
 }
 
@@ -291,7 +280,7 @@ func retrieveRecords() (entriesQuery []Entry) {
 		log.Fatalf("Failed to create client: %v", err)
 	}
 
-	q := datastore.NewQuery("Registration")
+	q := datastore.NewQuery("Registrations")
 
 	if _, err := client.GetAll(ctx, q, &entriesQuery); err != nil {
 		log.Fatalf("Failed to retrieve records: %v", err)

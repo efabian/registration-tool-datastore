@@ -54,12 +54,12 @@ func (msg *Inputs) Validate() bool {
 
 	// if strings.TrimSpace(msg.Area) == "" {
 	if matchArea == "" {
-		msg.Errors["Area"] = "Please enter your local's area"
+		msg.Errors["Area"] = "Please enter your area (ex: 1)"
 	}
 
 	// if strings.TrimSpace(msg.Group) == "" {
 	if matchGroup == "" {
-		msg.Errors["Group"] = "Please enter your area's group"
+		msg.Errors["Group"] = "Please enter your group (ex: 1)"
 	}
 
 	if strings.TrimSpace(msg.Gender) == "" {

@@ -22,18 +22,14 @@ type Entry struct {
 	District     string
 	Status       string
 	PreferredDay string
-	Available    string //Deprecated property; to-be deleted
 }
 
 func main() {
 	// Doing the seeding out of habit ;)
 	rand.Seed(time.Now().UnixNano())
 
-	http.HandleFunc("/internal/register", RegistrationHandler)
+	http.HandleFunc("/meet-greet/register", RegistrationHandler)
 	http.HandleFunc("/internal/retrieve", RetrievalHandler)
-	http.HandleFunc("/confirmation", confirmation)
-	http.HandleFunc("/sendingfailure", sendingfailure)
-	http.HandleFunc("/registrationfailure", registrationfailure)
 
 	// Health and miscellaneous APIs
 	http.HandleFunc("/status", StatusHandler)
