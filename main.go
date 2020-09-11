@@ -29,7 +29,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	http.HandleFunc("/meet-greet/register", RegistrationHandler)
-	http.HandleFunc("/internal/retrieve", RetrievalHandler)
+	http.HandleFunc("/internal/reports", ReportsHandler)
 
 	// Health and miscellaneous APIs
 	http.HandleFunc("/status", StatusHandler)

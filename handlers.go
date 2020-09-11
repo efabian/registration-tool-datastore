@@ -13,8 +13,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
-	"google.golang.org/appengine"
-	"google.golang.org/appengine/user"
 	"gopkg.in/gomail.v2"
 )
 
@@ -32,19 +30,20 @@ type templateTags struct {
 }
 
 type secrets struct {
-	ID      int    `datastore:"ID"`
-	API     string `datastore:"api"`
-	Key     string `datastore:"key"`
-	SMTP    string `datastore:"smtp"`
-	Sender  string `datastore:"sender"`
-	BCC     string `datastore:"bcc"`
-	BCCnick string `datastore:"bccnick"`
-	Subject string `datastore:"subject"`
-	Link    string `datastore:"zlink"`
-	Meet    string `datastore:"zmeet"`
-	Pass    string `datastore:"zpass"`
-	Date    string `datastore:"zdate"`
-	QR      string `datastore:"zqr"`
+	ID       int    `datastore:"ID"`
+	API      string `datastore:"api"`
+	Key      string `datastore:"key"`
+	Passcode string `datastore:"passcode"`
+	SMTP     string `datastore:"smtp"`
+	Sender   string `datastore:"sender"`
+	BCC      string `datastore:"bcc"`
+	BCCnick  string `datastore:"bccnick"`
+	Subject  string `datastore:"subject"`
+	Link     string `datastore:"zlink"`
+	Meet     string `datastore:"zmeet"`
+	Pass     string `datastore:"zpass"`
+	Date     string `datastore:"zdate"`
+	QR       string `datastore:"zqr"`
 }
 
 const projectID string = "hk-thai-kadiwa"
@@ -288,33 +287,28 @@ func retrieveRecords() (entriesQuery []Entry) {
 	return entriesQuery
 }
 
-// RetrievalHandler retrieves the records from the database
-func RetrievalHandler(w http.ResponseWriter, r *http.Request) {
-	// To-Do: Add a security
-	// tmpl := template.Must(template.ParseFiles("templates/records.html"))
-	// records := retrieveRecords()
-	// log.Println(records[0].Email)
-	// if records.PreferredDay = "wed" {
-	// 	records.
-	// }
-	// err := tmpl.Execute(w, records)
-	// if err != nil {
-	// 	log.Fatalln(err)
-	// }
-}
+// ReportsHandler retrieves the records from the database
+func ReportsHandler(w http.ResponseWriter, r *http.Request) {
 
-// Tester for a new handler
-func Tester(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-type", "text/html; charset=utf-8")
-	ctx := appengine.NewContext(r)
-	u := user.Current(ctx)
-	if u == nil {
-		url, _ := user.LoginURL(ctx, "http://localhost:8080/internal/retrieve")
-		fmt.Fprintf(w, `<a href="%s">Sign in or register</a>`, url)
+	if r.Method != http.MethodPost {
+		render(w, "templates/reports.html", nil)
 		return
 	}
-	url, _ := user.LogoutURL(ctx, "/internal/retrieve")
-	fmt.Fprintf(w, `Welcome, %s! (<a href="%s">sign out</a>)`, u, url)
+
+	secrets := retrieveSecrets()
+
+	passcode := secrets[0].Passcode
+
+	userInput := r.PostFormValue("passcode")
+
+	if userInput != passcode {
+		render(w, "templates/incorrectpassword.html", nil)
+		return
+	}
+
+	records := retrieveRecords()
+	render(w, "templates/records.html", records)
+
 }
 
 // StatusHandler provides basic health check
